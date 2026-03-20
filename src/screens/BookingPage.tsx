@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import Header from '@/components/Header'
 import Calendar from '@/components/Calendar'
 import styles from './BookingPage.module.css'
+import { createBooking } from '@/services/bookingService'
+import { useToast } from '@/hooks/useToast'
 
 interface BookingPageProps {
   equipmentId: string
@@ -17,6 +19,7 @@ export default function BookingPage({ equipmentId }: BookingPageProps) {
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
   const [selectedTime, setSelectedTime] = useState<string | null>(null)
   const [rentalType, setRentalType] = useState<'remote' | 'in-person'>('remote')
+  const toast = useToast()
 
   const equipmentName = 'Oculus Rift CV1' // В реальном приложении загружать из API
 
@@ -35,9 +38,30 @@ export default function BookingPage({ equipmentId }: BookingPageProps) {
   }
 
   const handleConfirm = () => {
-    // Здесь будет логика подтверждения бронирования
-    alert('Бронирование успешно создано! Файлы будут автоматически загружены за час до сессии.')
-    router.push('/equipment')
+    if (!selectedDate) {
+      toast.error('Не выбрана дата')
+      return
+    }
+
+    if (!selectedTime) {
+      toast.error('Не выбрано время')
+      return
+    }
+
+    createBooking({
+      equipmentId,
+      startTime: selectedDate + ' ' + selectedTime,
+      rentalType: rentalType,
+      files: selectedFiles,
+    })
+    .then(() => {
+      toast.success('Бронирование успешно создано! Файлы будут автоматически загружены за час до сессии.')
+
+      router.push('/equipment')
+    })
+    .catch(() => {
+      toast.error('Ошибка! Не удалось создать ')
+    })
   }
 
   return (

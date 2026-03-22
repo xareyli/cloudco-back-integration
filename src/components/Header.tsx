@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import styles from './Header.module.css'
-import { useRouter } from 'next/navigation'
+import { useAuth } from '@/hooks/useAuth'
 
 interface HeaderProps {
   showBack?: boolean
@@ -10,7 +10,7 @@ interface HeaderProps {
 }
 
 export default function Header({ showBack = false, title }: HeaderProps) {
-  const router = useRouter();
+  const { isAuthenticated } = useAuth();
 
   return (
     <header className={styles.header}>
@@ -43,11 +43,11 @@ export default function Header({ showBack = false, title }: HeaderProps) {
         <div className={styles.rightActions}>
           <button className={styles.notificationButton}>🔔</button>
 
-          <button className={styles.profilePicture} onClick={() => router.push('/login')}>
+          <Link href={isAuthenticated ? '/filesystem' : '/login'} className={styles.profilePicture}>
             <div className={styles.profilePlaceholder}>
               <span>👤</span>
             </div>
-          </button>
+          </Link>
         </div>
       </div>
       {title && <h1 className={styles.pageTitle}>{title}</h1>}

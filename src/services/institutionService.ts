@@ -1,18 +1,8 @@
 // Сервис для работы с учреждениями
 // Интеграция с бэкенд API
 
+import { Institution } from '@/models/Api'
 import { api } from '@/utils/api'
-
-export interface Institution {
-  id: string
-  name: string
-  address: string
-  hours: string
-  phone?: string
-  website?: string
-  images: string[]
-  courses?: Course[]
-}
 
 export interface Course {
   id: string

@@ -110,7 +110,7 @@ export const coursesApi = {
   },
   
   getById: async (id: string) => {
-    return apiClient.get(`/courses/${id}`);
+    return apiClient.get<Course>(`/courses/${id}`);
   },
 };
 

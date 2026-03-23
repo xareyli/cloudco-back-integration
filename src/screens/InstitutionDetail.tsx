@@ -4,43 +4,44 @@ import { useRouter } from 'next/navigation'
 import Header from '@/components/Header'
 import ImageWithFallback from '@/components/ImageWithFallback'
 import styles from './InstitutionDetail.module.css'
+import { Institution } from '@/models/Api'
+import { useEffect, useState } from 'react'
+import { getInstitutionById } from '@/services/institutionService'
 
 interface InstitutionDetailProps {
   institutionId: string
 }
 
-const institutionData: Record<string, any> = {
-  '1': {
-    name: 'ГОДУ Новгородский Кванториум',
-    address: 'Большая Московская ул., 39, корп. 1',
-    hours: 'Закрыто до 09:00',
-    phone: '+7 (8162) 63-79-55',
-    website: 'kvantorium53.ru',
-    images: ['/institution/kvantorium-1.svg'],
-    courses: [
-      {
-        id: '2',
-        title: 'Информационные технологии и проектная деятельность',
-        spotsLeft: 2,
-      },
-      {
-        id: '1',
-        title: 'VR/AR Квантум',
-        spotsLeft: 2,
-      },
-    ],
-  },
-}
-
 export default function InstitutionDetail({ institutionId }: InstitutionDetailProps) {
   const router = useRouter()
-  const institution = institutionData[institutionId]
+    const [institution, setInstitution] = useState<Institution | 'loading' | null>('loading');
+  
+    useEffect(() => {
+      const findInstitution = async () => {
+        const institution = await getInstitutionById(institutionId)
+
+        setInstitution(institution || null);
+      }
+
+      findInstitution()
+    }, [])
 
   if (!institution) {
     return (
       <div className={styles.container}>
         <Header showBack />
         <div className={styles.notFound}>Учреждение не найдено</div>
+      </div>
+    )
+  }
+
+  if (institution === 'loading') {
+    return (
+      <div className={styles.container}>
+        <Header showBack />
+        <div className="mt-10">
+          <div className="bigLoader" />
+        </div>
       </div>
     )
   }

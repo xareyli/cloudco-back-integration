@@ -1,34 +1,15 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Header from '@/components/Header'
 import ImageWithFallback from '@/components/ImageWithFallback'
 import styles from './CourseDetail.module.css'
+import { coursesApi } from '@/utils/LegacyApi'
+import { Course } from '@/models/Api'
 
 interface CourseDetailProps {
   courseId: string
-}
-
-const courseData: Record<string, any> = {
-  '1': {
-    id: '1',
-    title: 'VR/AR Квантум',
-    institution: 'ГОДУ Новгородский Кванториум',
-    address: 'Большая Московская ул., 39, корп. 1',
-    spotsLeft: 2,
-    images: ['/institution/kvantorium-1.svg'],
-    description: 'Интересуетесь наукой и техникой? Собираетесь стать великим создателем игр? Мечтаете освоить новейшие информационные технологии, игровые движки, хотите собрать собственные VR очки, создать свою первую 3D-модель или научиться обрабатывать панорамные видеоролики? Всё это у нас!',
-  },
-  '2': {
-    id: '2',
-    title: 'Информационные технологии и проектная деятельность',
-    institution: 'ГОДУ Новгородский Кванториум',
-    address: 'Большая Московская ул., 39, корп. 1',
-    spotsLeft: 2,
-    images: ['/institution/kvantorium-1.svg'],
-    description: 'Курс по информационным технологиям и проектной деятельности для начинающих и продвинутых студентов.',
-  },
 }
 
 export default function CourseDetail({ courseId }: CourseDetailProps) {
@@ -38,14 +19,32 @@ export default function CourseDetail({ courseId }: CourseDetailProps) {
   const [agreedToDataProcessing, setAgreedToDataProcessing] = useState(true)
   const [wantReminder, setWantReminder] = useState(true)
   const [addToCalendar, setAddToCalendar] = useState(false)
+  const [course, setCourse] = useState<Course | 'loading' | null>('loading');
 
-  const course = courseData[courseId]
+  useEffect(() => {
+    const findCourse = async () => {
+      const course = (await coursesApi.getById(courseId)).data
 
-  if (!course) {
+      setCourse(course || null);
+    }
+
+    findCourse()
+  }, [])
+
+  if (course === null) {
     return (
       <div className={styles.container}>
         <Header showBack />
         <div className={styles.notFound}>Направление не найдено</div>
+      </div>
+    )
+  }
+
+  if (course === 'loading') {
+    return (
+      <div className={styles.container}>
+        <Header showBack />
+          <div className="bigLoader" />
       </div>
     )
   }

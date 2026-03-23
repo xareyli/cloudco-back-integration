@@ -7,52 +7,7 @@ import SearchBar from '@/components/SearchBar'
 import SearchResultCard from '@/components/SearchResultCard'
 import { useDebounce } from '@/hooks/useDebounce'
 import styles from './SearchPage.module.css'
-
-const searchResults = {
-  address: [
-    {
-      id: '1',
-      name: 'ГОАУ Новгородский Квантор...',
-      address: 'Большая Московская ул., 39, корп. 1',
-      hours: '9:00-19:00',
-      status: 'open' as const,
-    },
-    {
-      id: '2',
-      name: 'ГОАУ Новгородский Квантор...',
-      address: 'Большая Московская ул., 39, корп. 1',
-      hours: '9:00-19:00',
-      status: 'closed' as const,
-    },
-    {
-      id: '3',
-      name: 'Фрезерный станок',
-      address: 'Большая Московская ул., 126, корп. 3',
-      hours: '10:00-17:00',
-      status: 'open' as const,
-      distance: '1.26 км от вас',
-      type: 'equipment',
-    },
-    {
-      id: '4',
-      name: 'Фрезерный станок',
-      address: 'Большая Московская ул., 126, корп. 3',
-      hours: '10:00-17:00',
-      status: 'closed' as const,
-      distance: '1.26 км от вас',
-      type: 'equipment',
-    },
-  ],
-  specialists: [
-    {
-      id: '1',
-      name: 'Евгений Просвирнин',
-      type: 'specialist',
-      avatar: '/profile.jpg',
-    },
-  ],
-  services: [],
-}
+import { getInstitutions } from '@/services/institutionService'
 
 export default function SearchPage() {
   const searchParams = useSearchParams()
@@ -60,17 +15,24 @@ export default function SearchPage() {
   const [searchQuery, setSearchQuery] = useState(query)
   const [results, setResults] = useState<any[]>([])
   const [searchType, setSearchType] = useState<'address' | 'specialists' | 'services'>('address')
-  
+
   const debouncedSearchQuery = useDebounce(searchQuery, 300)
 
   useEffect(() => {
     if (debouncedSearchQuery) {
-      // Простая фильтрация по типу поиска
-      const filtered = searchResults[searchType].filter(item =>
-        item.name.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
-        (item.address && item.address.toLowerCase().includes(debouncedSearchQuery.toLowerCase()))
-      )
-      setResults(filtered)
+      const doSearch = async () => {
+        const items = await getInstitutions();
+
+        // Простая фильтрация по типу поиска
+        const filtered = items.filter(item =>
+          item.name?.toLowerCase?.()?.includes?.(searchQuery) ||
+          (item.address && item.address.toLowerCase().includes(searchQuery))
+        )
+
+        setResults(filtered)
+      }
+
+      doSearch();
     } else {
       setResults([])
     }
@@ -84,7 +46,7 @@ export default function SearchPage() {
         value={searchQuery}
         onChange={setSearchQuery}
       />
-      
+
       <div className={styles.searchTabs}>
         <button
           className={`${styles.tab} ${searchType === 'address' ? styles.active : ''}`}

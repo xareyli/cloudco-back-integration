@@ -36,13 +36,15 @@ export default function SearchResultCard({ result }: SearchResultCardProps) {
       <div className={styles.card} onClick={handleClick}>
         <div className={styles.avatar}>
           {result.avatar ? (
-            <img src={result.avatar} alt={result.name} onError={(e) => {
-              e.currentTarget.style.display = 'none'
-              e.currentTarget.nextElementSibling?.classList.remove(styles.hidden)
-            }} />
-            <div className={`${styles.avatarPlaceholder} ${styles.hidden}`}>
-              <span>👤</span>
-            </div>
+            <>
+              <img src={result.avatar} alt={result.name} onError={(e) => {
+                e.currentTarget.style.display = 'none'
+                e.currentTarget.nextElementSibling?.classList.remove(styles.hidden)
+              }} />
+              <div className={`${styles.avatarPlaceholder} ${styles.hidden}`}>
+                <span>👤</span>
+              </div>
+            </>
           ) : (
             <div className={styles.avatarPlaceholder}>
               <span>👤</span>

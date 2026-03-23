@@ -1,3 +1,5 @@
+import { Course } from "@/models/Api";
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
 interface ApiResponse<T> {
@@ -104,7 +106,7 @@ export const coursesApi = {
     if (search) params.append('search', search);
     if (institutionId) params.append('institutionId', institutionId);
     const query = params.toString() ? `?${params}` : '';
-    return apiClient.get(`/courses${query}`);
+    return apiClient.get<Course[]>(`/courses${query}`);
   },
   
   getById: async (id: string) => {
